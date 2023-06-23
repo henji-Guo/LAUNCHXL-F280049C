@@ -233,7 +233,7 @@ union SCICLEARINTLVL_REG {
 struct SCIFLR_BITS {                    // bits description
     bp_16 BRKDT:1;                      // 0 Break-detect Flag (SCI compatible mode)
     bp_16 WAKEUP:1;                     // 1 Wake-up Flag
-    bp_16 IDLE:1;                       // 2 SCI receiver in idle state (SCI compatible mode)
+    bp_16 LIN_IDLE:1;                       // 2 SCI receiver in idle state (SCI compatible mode)
     bp_16 BUSY:1;                       // 3 Busy Flag
     bp_16 TIMEOUT:1;                    // 4 LIN Bus IDLE timeout Flag (LIN only)
     bp_16 rsvd1:1;                      // 5 Reserved

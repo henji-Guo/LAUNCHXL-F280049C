@@ -1,5 +1,8 @@
 #include "device.h"
 #include "board.h"
+#include "user_driver.h"
+#include "test.h"
+
 /**
  * main.c
  */
@@ -28,6 +31,7 @@ int main(void)
 
     while(1){
 
+        led_test();
         DEVICE_DELAY_US(500000);
     }
 
