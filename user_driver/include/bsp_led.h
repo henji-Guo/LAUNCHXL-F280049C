@@ -11,13 +11,13 @@
 #include "device.h"
 #include "f28004x_device.h"
 
-void led4_init(void);
-void led4_on(void);
-void led4_off(void);
+void bsp_led4_init(void);
+void bsp_led4_on(void);
+void bsp_led4_off(void);
 
-void led5_init(void);
-void led5_on(void);
-void led5_off(void);
+void bsp_led5_init(void);
+void bsp_led5_on(void);
+void bsp_led5_off(void);
 
 
 #endif /* INCLUDE_LED_H_ */

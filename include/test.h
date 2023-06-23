@@ -10,5 +10,7 @@
 
 void led_test(void);
 
+void sci_a_test(void);
+
 
 #endif /* INCLUDE_TEST_H_ */

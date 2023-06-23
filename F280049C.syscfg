@@ -4,3 +4,24 @@
  * @cliArgs --board "/boards/LAUNCHXL_F280049C" --context "system" --product "C2000WARE@4.03.00.00"
  * @versions {"tool":"1.16.1+2960"}
  */
+
+/**
+ * Import the modules used in this configuration.
+ */
+const sci  = scripting.addModule("/driverlib/sci.js", {}, false);
+const sci1 = sci.addInstance();
+
+/**
+ * Write custom configuration values to the imported modules.
+ */
+sci1.$name     = "mySCI0";
+sci1.$hardware = system.deviceData.board.components.XDS_UART.subComponents.XDS_SCI_INST1;
+
+/**
+ * Pinmux solution for unlocked pins/peripherals. This ensures that minor changes to the automatic solver in a future
+ * version of the tool will not impact the pinmux you originally saw.  These lines can be completely deleted in order to
+ * re-solve from scratch.
+ */
+sci1.sci.$suggestSolution           = "SCIA";
+sci1.sci.sci_rxPin.$suggestSolution = "boosterpack2.43";
+sci1.sci.sci_txPin.$suggestSolution = "boosterpack2.44";

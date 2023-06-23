@@ -2,6 +2,7 @@
 #include "board.h"
 #include "user_driver.h"
 #include "test.h"
+#include "stdio.h"
 
 /**
  * main.c
@@ -25,15 +26,24 @@ int main(void)
     // SysConfig settings
     Board_init();
 
+    printf("******** APPLICATION STATR ********\r\n");
+
     // Enable Global Interrupt (INTM) and real time interrupt (DBGM)
     EINT;
     ERTM;
 
     while(1){
 
-        led_test();
+        //led_test();
+        sci_a_test();
         DEVICE_DELAY_US(500000);
     }
 
 }
 
+// To use printf
+int fputc(int _c, FILE *_fp)
+{
+    SCI_writeCharBlockingNonFIFO(SCIA_BASE, _c);
+    return 0;
+}

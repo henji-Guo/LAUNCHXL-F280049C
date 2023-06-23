@@ -4,9 +4,9 @@
  *  Created on: 2023Äê6ÔÂ23ÈÕ
  *      Author: GHJ
  */
-#include "led.h"
+#include <bsp_led.h>
 
-void led4_init(void)
+void bsp_led4_init(void)
 {
     GpioCtrlRegs.GPAMUX2.bit.GPIO23 = 0b00;
     GpioCtrlRegs.GPAGMUX2.bit.GPIO23 = 0b00;
@@ -16,30 +16,30 @@ void led4_init(void)
     GpioCtrlRegs.GPACSEL3.bit.GPIO23 = 0x0;
 }
 
-void led4_on(void)
+void bsp_led4_on(void)
 {
     GpioDataRegs.GPASET.bit.GPIO23 = 0b1;
 }
 
-void led4_off(void)
+void bsp_led4_off(void)
 {
     GpioDataRegs.GPACLEAR.bit.GPIO23 = 0b1;
 }
 
 
-void led5_init(void)
+void bsp_led5_init(void)
 {
     GPIO_setPinConfig(GPIO_34_GPIO34);
     GPIO_setPadConfig(34, GPIO_PIN_TYPE_PULLUP);
     GPIO_setDirectionMode(34, GPIO_DIR_MODE_OUT);
 }
 
-void led5_on(void)
+void bsp_led5_on(void)
 {
     GPIO_writePin(34, 1);
 }
 
-void led5_off(void)
+void bsp_led5_off(void)
 {
     GPIO_writePin(34, 0);
 }
