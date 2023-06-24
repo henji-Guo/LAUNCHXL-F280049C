@@ -3,7 +3,8 @@
 #include "user_driver.h"
 #include "test.h"
 #include "stdio.h"
-
+#include "string.h"
+#include "bsp_sw_iic.h"
 /**
  * main.c
  */
@@ -26,24 +27,50 @@ int main(void)
     // SysConfig settings
     Board_init();
 
+    bsp_iic_init();
+
     printf("******** APPLICATION STATR ********\r\n");
+
+
 
     // Enable Global Interrupt (INTM) and real time interrupt (DBGM)
     EINT;
     ERTM;
 
-    while(1){
+    while (1)
+    {
 
-        //led_test();
-        sci_a_test();
+//        led_test();
+//        sci_a_test();
+//        iic_test();
         DEVICE_DELAY_US(500000);
     }
 
 }
 
 // To use printf
-int fputc(int _c, FILE *_fp)
+int fputc(int _c, register FILE *_fp)
 {
     SCI_writeCharBlockingNonFIFO(SCIA_BASE, _c);
-    return 0;
+    return _c;
+}
+int putc(int _c, register FILE *_fp)
+{
+    SCI_writeCharBlockingNonFIFO(SCIA_BASE, _c);
+    return _c;
+}
+int putchar(int data)
+{
+    SCI_writeCharBlockingNonFIFO(SCIA_BASE, data);
+    return data;
+}
+int fputs(const char *_ptr, register FILE *_fp)
+{
+    unsigned int i, len;
+    len = strlen(_ptr);
+    for(i=0 ; i<len ; i++)
+    {
+        SCI_writeCharBlockingNonFIFO(SCIA_BASE, _ptr[i]);
+    }
+    return len;
 }

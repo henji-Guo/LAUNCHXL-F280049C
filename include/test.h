@@ -8,9 +8,11 @@
 #ifndef INCLUDE_TEST_H_
 #define INCLUDE_TEST_H_
 
+
 void led_test(void);
 
 void sci_a_test(void);
 
+void iic_test(void);
 
 #endif /* INCLUDE_TEST_H_ */
