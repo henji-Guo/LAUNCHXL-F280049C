@@ -8,8 +8,6 @@
 /**
  * main.c
  */
-
-
 int main(void)
 {
     // Initialize device clock and peripherals
