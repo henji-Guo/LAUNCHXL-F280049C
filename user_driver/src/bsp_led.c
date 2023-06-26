@@ -43,3 +43,8 @@ void bsp_led5_off(void)
 {
     GPIO_writePin(34, 0);
 }
+
+void bsp_led5_toggle(void)
+{
+    GPIO_togglePin(34);
+}

@@ -4,10 +4,11 @@
 #include "test.h"
 #include "stdio.h"
 #include "string.h"
-#include "bsp_sw_iic.h"
+
 /**
  * main.c
  */
+
 
 int main(void)
 {
@@ -27,22 +28,17 @@ int main(void)
     // SysConfig settings
     Board_init();
 
-    bsp_iic_init();
-
-    printf("******** APPLICATION STATR ********\r\n");
-
-
-
     // Enable Global Interrupt (INTM) and real time interrupt (DBGM)
     EINT;
     ERTM;
 
+    printf("******** APPLICATION STATR ********\r\n");
+
+    timer_test();
+
     while (1)
     {
 
-//        led_test();
-//        sci_a_test();
-//        iic_test();
         DEVICE_DELAY_US(500000);
     }
 
@@ -68,7 +64,7 @@ int fputs(const char *_ptr, register FILE *_fp)
 {
     unsigned int i, len;
     len = strlen(_ptr);
-    for(i=0 ; i<len ; i++)
+    for (i = 0; i < len; i++)
     {
         SCI_writeCharBlockingNonFIFO(SCIA_BASE, _ptr[i]);
     }

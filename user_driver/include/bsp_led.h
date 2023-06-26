@@ -18,6 +18,6 @@ void bsp_led4_off(void);
 void bsp_led5_init(void);
 void bsp_led5_on(void);
 void bsp_led5_off(void);
-
+void bsp_led5_toggle(void);
 
 #endif /* INCLUDE_LED_H_ */

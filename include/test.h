@@ -15,4 +15,6 @@ void sci_a_test(void);
 
 void iic_test(void);
 
+void timer_test(void);
+
 #endif /* INCLUDE_TEST_H_ */
