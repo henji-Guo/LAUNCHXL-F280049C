@@ -17,4 +17,6 @@ void iic_test(void);
 
 void timer_test(void);
 
+void i2c_test(void);
+
 #endif /* INCLUDE_TEST_H_ */

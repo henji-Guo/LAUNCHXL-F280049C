@@ -32,7 +32,8 @@ int main(void)
 
     printf("******** APPLICATION STATR ********\r\n");
 
-    timer_test();
+//    timer_test();
+        i2c_test();
 
     while (1)
     {
