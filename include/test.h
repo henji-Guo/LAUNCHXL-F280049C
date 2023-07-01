@@ -19,4 +19,6 @@ void timer_test(void);
 
 void i2c_test(void);
 
+void adc_sw_test(void);
+
 #endif /* INCLUDE_TEST_H_ */
