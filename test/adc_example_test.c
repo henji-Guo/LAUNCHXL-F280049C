@@ -10,12 +10,14 @@
 #include "f28004x_device.h"
 
 uint16_t adca_result = 0;
-__interrupt void adca_isr(void);
+static __interrupt void adca_isr(void);
 
 // adc software trigger sample
 void adc_sw_test(void)
 {
     //Note that ADC PIN do not need pin mux init
+
+    // not necessary
     SysCtl_resetPeripheral(SYSCTL_PERIPH_RES_ADCA);
     //disable
     ADC_disableConverter(ADCA_BASE);

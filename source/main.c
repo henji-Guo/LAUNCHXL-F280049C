@@ -32,12 +32,11 @@ int main(void)
 
     printf("******** APPLICATION STATR ********\r\n");
 
-//    timer_test();
-//    i2c_test();
-      adc_sw_test();
+    dac_test();
+
     while (1)
     {
-
+        //TODO
         DEVICE_DELAY_US(500000);
     }
 

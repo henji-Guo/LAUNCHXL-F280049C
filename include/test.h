@@ -21,4 +21,6 @@ void i2c_test(void);
 
 void adc_sw_test(void);
 
+void dac_test(void);
+
 #endif /* INCLUDE_TEST_H_ */
