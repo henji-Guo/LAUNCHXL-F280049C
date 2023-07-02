@@ -32,7 +32,7 @@ int main(void)
 
     printf("******** APPLICATION STATR ********\r\n");
 
-    dac_test();
+    pga_test();
 
     while (1)
     {

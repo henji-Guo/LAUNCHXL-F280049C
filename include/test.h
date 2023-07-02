@@ -23,4 +23,6 @@ void adc_sw_test(void);
 
 void dac_test(void);
 
+void pga_test(void);
+
 #endif /* INCLUDE_TEST_H_ */
