@@ -13,6 +13,7 @@
 #include "driverlib.h"
 #include "f28004x_device.h"
 
+__attribute__((__unused__))
 static uint16_t dac_to_adc_value;
 // interrupt routine
 static __interrupt void adca_isr_handler(void)
@@ -80,6 +81,7 @@ void dac_test(void)
     for ( i = 0; i < UINT64_MAX; i++) {
         // set output value
         DAC_setShadowValue(DACB_BASE, i%4096);
+        DEVICE_DELAY_US(10);
         // restart sample
         ADC_forceSOC(ADCA_BASE,ADC_SOC_NUMBER0);
         DEVICE_DELAY_US(1000);

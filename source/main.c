@@ -1,5 +1,5 @@
 #include "device.h"
-#include "board.h"
+//#include "board.h"
 #include "user_driver.h"
 #include "test.h"
 #include "stdio.h"
@@ -23,8 +23,8 @@ int main(void)
     // Service Routines (ISR)
     Interrupt_initVectorTable();
 
-    // SysConfig settings
-    Board_init();
+//    // SysConfig settings
+//    Board_init();
 
     // Enable Global Interrupt (INTM) and real time interrupt (DBGM)
     EINT;
