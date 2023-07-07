@@ -29,3 +29,4 @@ encoding//RAM/test/subdir_rules.mk=UTF-8
 encoding//RAM/test/subdir_vars.mk=UTF-8
 encoding//RAM/user_driver/src/subdir_rules.mk=UTF-8
 encoding//RAM/user_driver/src/subdir_vars.mk=UTF-8
+encoding//test/epwm_symmetric_example_test.c=UTF-8

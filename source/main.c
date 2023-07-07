@@ -8,6 +8,7 @@
 /**
  * main.c
  */
+
 int main(void)
 {
     // Initialize device clock and peripherals
@@ -32,7 +33,7 @@ int main(void)
 
     printf("******** APPLICATION STATR ********\r\n");
 
-    pga_test();
+    epwm_symmetric_deadband_test();
 
     while (1)
     {

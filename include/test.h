@@ -1,7 +1,7 @@
 /*
  * test.h
  *
- *  Created on: 2023Äê6ÔÂ23ÈÕ
+ *  Created on: 2023ï¿½ï¿½6ï¿½ï¿½23ï¿½ï¿½
  *      Author: GHJ
  */
 
@@ -24,5 +24,11 @@ void adc_sw_test(void);
 void dac_test(void);
 
 void pga_test(void);
+
+void pwm_base_test(void);
+
+void epwm_symmetric_test(void);
+
+void epwm_symmetric_deadband_test(void);
 
 #endif /* INCLUDE_TEST_H_ */
