@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "*.S": "c",
+        "*.cla": "c",
+        "*.ld": "linkerscript",
+        "driverlib.h": "c",
+        "device.h": "c",
+        "f28004x_device.h": "c",
+        "adc.h": "c",
+        "asysctl.h": "c",
+        "hw_memmap.h": "c",
+        "cputimer.h": "c"
+    },
+    "C_Cpp.errorSquiggles": "disabled"
+}

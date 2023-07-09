@@ -1,7 +1,7 @@
 /*
  * pwm_example_test.c
  *
- *  Created on: 2023Äê7ÔÂ5ÈÕ
+ *  Created on: 2023å¹´7æœˆ5æ—¥
  *      Author: GHJ
  */
 #include "test.h"

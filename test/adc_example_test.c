@@ -1,7 +1,7 @@
 /*
  * adc_example_test.c
  *
- *  Created on: 2023Äê7ÔÂ1ÈÕ
+ *  Created on: 2023å¹´7æœˆ1æ—¥
  *      Author: GHJ
  */
 #include "test.h"

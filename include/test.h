@@ -31,4 +31,6 @@ void epwm_symmetric_test(void);
 
 void epwm_symmetric_deadband_test(void);
 
+void epwm_adc_test(void);
+
 #endif /* INCLUDE_TEST_H_ */

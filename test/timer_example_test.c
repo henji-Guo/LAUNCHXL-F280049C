@@ -1,7 +1,7 @@
 /*
  * timer_example_test.c
  *
- *  Created on: 2023Äê6ÔÂ26ÈÕ
+ *  Created on: 2023å¹´6æœˆ26æ—¥
  *      Author: GHJ
  */
 #include "test.h"

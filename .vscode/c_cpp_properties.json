@@ -1,0 +1,20 @@
+{
+    "configurations": [
+        {
+            "name": "Win32",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/f28004x_driverlib/",
+                "${workspaceFolder}/f28004x_driverlib/inc",
+                "D://Software/ti/ccs12/ccs/tools/compiler/ti-cgt-c2000_22.6.0.LTS/include"
+            ],
+            "defines": [
+                "_DEBUG",
+                "UNICODE",
+                "_UNICODE",
+                "__TMS320C28XX__"
+            ]
+        }
+    ],
+    "version": 4
+}

@@ -1,7 +1,7 @@
 /*
  * dac_example_test.c
  *
- *  Created on: 2023Äê7ÔÂ1ÈÕ
+ *  Created on: 2023å¹´7æœˆ1æ—¥
  *      Author: GHJ
  *
  *  DAC test: the pin DACB_OUP is same with ADCA_IN1,
@@ -45,7 +45,7 @@ static void adca_init(void){
     // Occurs at the end of the conversion
     ADC_setInterruptPulseMode(ADCA_BASE,ADC_PULSE_END_OF_CONV);
     // when SOC0 EOC trigger ADC_INT1
-    ADC_setInterruptSource(ADCA_BASE, ADC_INT_NUMBER1, 0);
+    ADC_setInterruptSource(ADCA_BASE, ADC_INT_NUMBER1, ADC_SOC_NUMBER0);
     // enable ADCA_INT1
     ADC_enableInterrupt(ADCA_BASE,ADC_INT_NUMBER1);
     // register ADCA1_INT

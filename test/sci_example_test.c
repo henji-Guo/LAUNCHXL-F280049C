@@ -1,7 +1,7 @@
 /*
  * sci_example_test.c
  *
- *  Created on: 2023Äê6ÔÂ23ÈÕ
+ *  Created on: 2023å¹´6æœˆ23æ—¥
  *      Author: GHJ
  */
 

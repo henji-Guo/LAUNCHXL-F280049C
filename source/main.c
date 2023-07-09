@@ -33,7 +33,9 @@ int main(void)
 
     printf("******** APPLICATION STATR ********\r\n");
 
-    epwm_symmetric_deadband_test();
+    epwm_adc_test();
+//    epwm_symmetric_deadband_test();
+
 
     while (1)
     {
