@@ -9,7 +9,11 @@
         "adc.h": "c",
         "asysctl.h": "c",
         "hw_memmap.h": "c",
-        "cputimer.h": "c"
+        "cputimer.h": "c",
+        "math.h": "c",
+        "stdint.h": "c",
+        "bsp_led.h": "c"
     },
-    "C_Cpp.errorSquiggles": "disabled"
+    "C_Cpp.errorSquiggles": "disabled",
+    "C_Cpp.default.compilerPath": ""
 }

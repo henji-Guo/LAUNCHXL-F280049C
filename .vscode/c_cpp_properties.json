@@ -13,7 +13,8 @@
                 "UNICODE",
                 "_UNICODE",
                 "__TMS320C28XX__"
-            ]
+            ],
+            "cStandard": "c99"
         }
     ],
     "version": 4

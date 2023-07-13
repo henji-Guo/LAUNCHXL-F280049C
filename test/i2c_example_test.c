@@ -8,9 +8,9 @@
 #include "f28004x_device.h"
 #include "string.h"
 
-#define I2C_SLAVE_ADDRESS   0x76
+#define I2C_SLAVE_ADDRESS   0x36
 #define I2C_TX_DATA_LENGTH  0x01
-#define I2C_RX_DATA_LENGTH  0x06
+#define I2C_RX_DATA_LENGTH  0x04
 uint16_t i2c_tx_buffer[I2C_TX_DATA_LENGTH];
 uint16_t i2c_rx_buffer[I2C_RX_DATA_LENGTH];
 
@@ -62,7 +62,7 @@ static inline void i2c_init(void)
 
     // Clock reference "TRM 24.1.5 Clock Generation"
     // Configure I2C Module clock using I2CPSC register I2C Module clock should be 7-12Mhz
-    I2caRegs.I2CPSC.bit.IPSC = 4;  // I2C_Module_CLK(Fmod) = 100MHz SYSCLK / (ISP=9 + 1) = 10Mhz
+    I2caRegs.I2CPSC.bit.IPSC = 4;  // I2C_Module_CLK(Fmod) = 100MHz SYSCLK / (ISP=4 + 1) = 20Mhz
 
     // Configure I2C Baud rate using I2CCLKL and I2CCLKH
     // I2C Baud rate = (I2CCLKL + d)+(I2CCLKH + d)/Fmod
@@ -82,7 +82,7 @@ static inline void i2c_init(void)
     I2caRegs.I2CFFTX.bit.TXFFIL = 0x0;
 //    I2caRegs.I2CFFTX.bit.TXFFIENA = 0x1;
     I2caRegs.I2CFFRX.bit.RXFFRST = 0x1;
-    I2caRegs.I2CFFRX.bit.RXFFIL = 0x6;
+    I2caRegs.I2CFFRX.bit.RXFFIL = 0x4;
 //    I2caRegs.I2CFFRX.bit.RXFFIENA = 0x1;
 
     // enable I2C IRS=1
@@ -173,7 +173,7 @@ void i2c_test()
     memset(i2c_tx_buffer,0,I2C_TX_DATA_LENGTH);
     memset(i2c_rx_buffer,0,I2C_RX_DATA_LENGTH);
 
-    i2c_tx_buffer[0] =  BMP280_press_msb;
+    i2c_tx_buffer[0] =  0x0C;
 
     i2c_init();
 
