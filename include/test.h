@@ -1,7 +1,7 @@
 /*
  * test.h
  *
- *  Created on: 2023��6��23��
+ *  Created on: 2023年6月23日
  *      Author: GHJ
  */
 
@@ -32,5 +32,7 @@ void epwm_symmetric_test(void);
 void epwm_symmetric_deadband_test(void);
 
 void epwm_adc_test(void);
+
+void boostxl_3phganinv2_test(void);
 
 #endif /* INCLUDE_TEST_H_ */

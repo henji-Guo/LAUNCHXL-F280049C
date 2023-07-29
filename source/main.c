@@ -54,9 +54,7 @@ int main(void)
 
     printf("******** APPLICATION STATR ********\r\n");
 
-
-    epwm_adc_test();
-//    epwm_symmetric_deadband_test();
+    boostxl_3phganinv2_test();
 
     while (1)
     {

@@ -12,7 +12,13 @@
         "cputimer.h": "c",
         "math.h": "c",
         "stdint.h": "c",
+<<<<<<< Updated upstream
         "bsp_led.h": "c"
+=======
+        "bsp_led.h": "c",
+        "stdio.h": "c",
+        "test.h": "c"
+>>>>>>> Stashed changes
     },
     "C_Cpp.errorSquiggles": "disabled",
     "C_Cpp.default.compilerPath": ""
