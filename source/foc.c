@@ -124,26 +124,32 @@ void svpwm(struct foc* foc_handle)
         case 1:
             T1 = Z;
             T2 = Y;
+            foc_handle->Sector = 2;
             break;
         case 2:
             T1 =  Y;
             T2 = -X;
+            foc_handle->Sector = 6;
             break;
         case 3:
             T1 = -Z;
             T2 =  X;
+            foc_handle->Sector = 1;
             break;
         case 4:
             T1 = -X;
             T2 =  Z;
+            foc_handle->Sector = 4;
             break;
         case 5:
             T1 =  X;
             T2 = -Y;
+            foc_handle->Sector = 3;
             break;
         case 6:
             T1 = -Y;
             T2 = -Z;
+            foc_handle->Sector = 5;
             break;
         default:
             T1 = 0;
@@ -198,7 +204,7 @@ void svpwm(struct foc* foc_handle)
             break;
     }
 
-    /* save Tcm1 Tcm2 Tcm3 */
+    /* save N Tcm1 Tcm2 Tcm3 */
     foc_handle->Tcm1 = Tcm1;
     foc_handle->Tcm2 = Tcm2;
     foc_handle->Tcm3 = Tcm3;
@@ -308,6 +314,34 @@ void Speed_PID(struct foc* foc_handle)
     foc_handle->Iq_ref = saturation((Up + Ui), 0.2, -0.2);
 }
 
+/**
+ * @brief Low Side three resistance current reconstruction.
+ * 
+ * @param foc_handle pointer to foc component handler
+ */
+void current_3R_reconstruction(struct foc* foc_handle)
+{
+    switch (foc_handle->Sector){
+        /* Sector 1/6 ingore Phase A */
+        case 1:
+        case 6:
+            foc_handle->Iabc[0] = -(foc_handle->Iabc[1] + foc_handle->Iabc[2]);
+            break;
+        /* Sector 2/3 ingore Phase B */
+        case 2:
+        case 3:
+            foc_handle->Iabc[1] = -(foc_handle->Iabc[0] + foc_handle->Iabc[2]);
+            break;
+        /* Sector 4/5 ingore Phase C */
+        case 4:
+        case 5:
+            foc_handle->Iabc[2] = -(foc_handle->Iabc[0] + foc_handle->Iabc[1]);
+            break;
+        default:
+            break;
+    }
+}
+
 
 /**
  * @brief Set PWM Duty
@@ -405,8 +439,10 @@ void foc_init(struct foc* foc_handle)
 
     foc_handle->pwm_period = 6250;
 
+    foc_handle->direction = DIR_CCW;
+
     foc_handle->motorFreq = 20;
-    foc_handle->motorPoles = 6U;
+    foc_handle->motorPoles = 7U;
     foc_handle->motorRs = 0.0836f;
     foc_handle->motorLd = 0.0126f;
     foc_handle->motorLq = 0.0126f;
@@ -415,11 +451,11 @@ void foc_init(struct foc* foc_handle)
     foc_handle->Id_ref = 0.0f;
     foc_handle->Speed_ref = 0.0f;
 
-    foc_handle->Iq_Kp = 0.0f;
-    foc_handle->Iq_Ki = 0.0f;
+    foc_handle->Iq_Kp = 5.3f;
+    foc_handle->Iq_Ki = 1.2f;
 
-    foc_handle->Id_Kp = 0.0f;
-    foc_handle->Id_Ki = 0.0f;
+    foc_handle->Id_Kp = 5.3f;
+    foc_handle->Id_Ki = 1.2f;
 
     foc_handle->Speed_Kp = 0.0f;
     foc_handle->Speed_Ki = 0.0f;
@@ -428,11 +464,13 @@ void foc_init(struct foc* foc_handle)
     foc_handle->IqErrorAll = 0.0f;
     foc_handle->SpeedErrorAll = 0.0f;
 
-    foc_handle->outMax = 5.0f;
-    foc_handle->outMin = -5.0f;
+    foc_handle->outMax = 3.0f;
+    foc_handle->outMin = -3.0f;
 
-    foc_handle->Ud = 0.0;
-    foc_handle->Uq = 0.0;
+    foc_handle->Ud = -0.1f;
+    foc_handle->Uq = -3.0f;
+
+    foc_handle->Sector = 2;
 
     foc_handle->clarke = &clarke;
     foc_handle->park   = &park;
@@ -446,6 +484,7 @@ void foc_init(struct foc* foc_handle)
     foc_handle->get_motorSpeed   = &get_motorSpeed;
     foc_handle->get_current_Iabc = &get_current_Iabc;
     foc_handle->get_voltage_Uabc = &get_voltage_Uabc;
+    foc_handle->current_3R_reconstruction = &current_3R_reconstruction;
 }
 
 /**
@@ -456,12 +495,16 @@ void foc_init(struct foc* foc_handle)
 void foc_run(struct foc* foc_handle)
 {
     /* temporary variable */
+    if(foc_handle->Iq > 0)
+        foc_handle->direction = DIR_CW;
+    else
+        foc_handle->direction = DIR_CCW;
 
     /* get motor electrical angle */
     foc_handle->get_RadianAngle(foc_handle);
 
     /* get motor speed */
-    // foc_handle->get_motorSpeed(foc_handle);
+    foc_handle->get_motorSpeed(foc_handle);
 
     /* get motor current Iabc */
     foc_handle->get_current_Iabc(foc_handle);

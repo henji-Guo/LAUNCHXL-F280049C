@@ -145,7 +145,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="test/adc_example_test.c|test/timer_example_test.c|test/sci_example_test.c|test/pwm_example_test.c|test/pga_example_test.c|test/led_example_test.c|test/iic_example_test.c|test/i2c_example_test.c|test/epwm_symmetric_example_test.c|test/dac_example_test.c|test/epwm_adc_example_test.c|28004x_generic_ram_lnk.cmd" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="test/boostxl_3phganinv2_test.c|test/adc_example_test.c|test/timer_example_test.c|test/sci_example_test.c|test/pwm_example_test.c|test/pga_example_test.c|test/led_example_test.c|test/iic_example_test.c|test/i2c_example_test.c|test/epwm_symmetric_example_test.c|test/dac_example_test.c|test/epwm_adc_example_test.c|28004x_generic_ram_lnk.cmd" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

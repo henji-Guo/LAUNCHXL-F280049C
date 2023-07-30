@@ -54,7 +54,7 @@ int main(void)
 
     printf("******** APPLICATION STATR ********\r\n");
 
-    boostxl_3phganinv2_test();
+    x_nucleo_ihm07m1_test();
 
     while (1)
     {

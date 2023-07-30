@@ -35,4 +35,6 @@ void epwm_adc_test(void);
 
 void boostxl_3phganinv2_test(void);
 
+void x_nucleo_ihm07m1_test(void);
+
 #endif /* INCLUDE_TEST_H_ */
