@@ -124,26 +124,32 @@ void svpwm(struct foc* foc_handle)
         case 1:
             T1 = Z;
             T2 = Y;
+            foc_handle->Sector = 2;
             break;
         case 2:
             T1 =  Y;
             T2 = -X;
+            foc_handle->Sector = 6;
             break;
         case 3:
             T1 = -Z;
             T2 =  X;
+            foc_handle->Sector = 1;
             break;
         case 4:
             T1 = -X;
             T2 =  Z;
+            foc_handle->Sector = 4;
             break;
         case 5:
             T1 =  X;
             T2 = -Y;
+            foc_handle->Sector = 3;
             break;
         case 6:
             T1 = -Y;
             T2 = -Z;
+            foc_handle->Sector = 5;
             break;
         default:
             T1 = 0;
@@ -290,7 +296,7 @@ void Speed_PID(struct foc* foc_handle)
     float Ui,Up;
 
     /* calculate Speed error */
-    foc_handle->Speed_error = foc_handle->Speed_ref - foc_handle->motorSpeed;
+    foc_handle->Speed_error = foc_handle->Speed_ref - fabsf(foc_handle->motorSpeed);
 
     /* calculate Kp * error */
     Up = foc_handle->Speed_Kp * foc_handle->Speed_error;
@@ -305,7 +311,8 @@ void Speed_PID(struct foc* foc_handle)
     foc_handle->SpeedErrorAll = Ui;
 
     /* calculate out */
-    foc_handle->Iq_ref = saturation((Up + Ui), 0.2, -0.2);
+    foc_handle->Iq_ref = saturation((Up + Ui), foc_handle->outMax, foc_handle->outMin);
+
 }
 
 
@@ -405,8 +412,10 @@ void foc_init(struct foc* foc_handle)
 
     foc_handle->pwm_period = 6250;
 
+    foc_handle->direction = DIR_CCW;
+
     foc_handle->motorFreq = 20;
-    foc_handle->motorPoles = 6U;
+    foc_handle->motorPoles = 7U;
     foc_handle->motorRs = 0.0836f;
     foc_handle->motorLd = 0.0126f;
     foc_handle->motorLq = 0.0126f;
@@ -415,14 +424,14 @@ void foc_init(struct foc* foc_handle)
     foc_handle->Id_ref = 0.0f;
     foc_handle->Speed_ref = 0.0f;
 
-    foc_handle->Iq_Kp = 0.0f;
-    foc_handle->Iq_Ki = 0.0f;
+    foc_handle->Iq_Kp = 0.18f;
+    foc_handle->Iq_Ki = 0.23f;
 
-    foc_handle->Id_Kp = 0.0f;
-    foc_handle->Id_Ki = 0.0f;
+    foc_handle->Id_Kp = 0.19f;
+    foc_handle->Id_Ki = 0.23f;
 
-    foc_handle->Speed_Kp = 0.0f;
-    foc_handle->Speed_Ki = 0.0f;
+    foc_handle->Speed_Kp = 0.000f;
+    foc_handle->Speed_Ki = 0.000f;
 
     foc_handle->IdErrorAll = 0.0f;
     foc_handle->IqErrorAll = 0.0f;
@@ -431,8 +440,10 @@ void foc_init(struct foc* foc_handle)
     foc_handle->outMax = 5.0f;
     foc_handle->outMin = -5.0f;
 
-    foc_handle->Ud = 0.0;
-    foc_handle->Uq = 0.0;
+    foc_handle->Ud = 0.0f;
+    foc_handle->Uq = 0.0f;
+
+    foc_handle->Sector = 2;
 
     foc_handle->clarke = &clarke;
     foc_handle->park   = &park;
@@ -461,7 +472,7 @@ void foc_run(struct foc* foc_handle)
     foc_handle->get_RadianAngle(foc_handle);
 
     /* get motor speed */
-    // foc_handle->get_motorSpeed(foc_handle);
+    foc_handle->get_motorSpeed(foc_handle);
 
     /* get motor current Iabc */
     foc_handle->get_current_Iabc(foc_handle);
@@ -474,13 +485,13 @@ void foc_run(struct foc* foc_handle)
 
     /* run park transform */
     foc_handle->park(foc_handle);
-
+    
     /* run Speed current loop PID regulation */
-    // foc_handle->Speed_PID(foc_handle);
+    foc_handle->Speed_PID(foc_handle);
 
     /* run current loop PID regulation */
-   foc_handle->Id_PI(foc_handle);
    foc_handle->Iq_PI(foc_handle);
+   foc_handle->Id_PI(foc_handle);
 
     /* run inverse-park transform */
     foc_handle->ipark(foc_handle);

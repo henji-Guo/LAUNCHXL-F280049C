@@ -54,6 +54,8 @@ int main(void)
 
     printf("******** APPLICATION STATR ********\r\n");
 
+    DEVICE_DELAY_US(2000000);
+
     boostxl_3phganinv2_test();
 
     while (1)

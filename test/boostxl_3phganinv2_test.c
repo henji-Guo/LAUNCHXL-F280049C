@@ -135,6 +135,10 @@ typedef enum {
 /* vofa frame */
 struct vofa vofa;
 
+/* sweep sample */
+#define SWEEP_SAMPLE_POINT  256
+float sweep_sample[SWEEP_SAMPLE_POINT];
+
 /* #################### Function Declaration #################### */
 static void boostxl_3phganiv2_gpio_mux(void);
 static void boostxl_3phganiv2_enable(void);
@@ -142,6 +146,8 @@ static void boostxl_3phganiv2_disable(void);
 
 static void led_gpio_init(void);
 static void led(BOARD_LED led,LED_STATUS status);
+
+static void timer_0_init(void);
 
 static void epwm_gpio_mux(void);
 static void epwm_1_init(void);
@@ -159,6 +165,7 @@ static float as5600_get_angle(void);
 
 __interrupt static void XINT1_ISR(void);
 __interrupt static void ADCC1_ISR(void);
+__interrupt static void TIMER0_ISR(void);
 
 /* #################### Function Definition #################### */
 static void boostxl_3phganiv2_gpio_mux(void)
@@ -251,6 +258,43 @@ static void led(BOARD_LED led,LED_STATUS status)
         default:
             break;
     }
+}
+
+static void timer_0_init(void)
+{
+    /**
+     *  CPUTIMER0 :
+     *      TIM0_CLK 1MHz SYS_CLK/(99+1)
+     */
+    /* stop */
+    CPUTimer_stopTimer(CPUTIMER0_BASE);
+
+    /* */
+    CPUTimer_selectClockSource(CPUTIMER0_BASE,CPUTIMER_CLOCK_SOURCE_SYS,CPUTIMER_CLOCK_PRESCALER_1);
+    /* set emulation mode*/
+    CPUTimer_setEmulationMode(CPUTIMER0_BASE, CPUTIMER_EMULATIONMODE_STOPAFTERNEXTDECREMENT);
+
+    /* set TIM0_CLK 1MHz */
+    CPUTimer_setPreScaler(CPUTIMER0_BASE, 99U);
+
+    /* set TIM0 Period 0XFFFF_FFFF */
+    CPUTimer_setPeriod(CPUTIMER0_BASE, 0xFFFFFFFF);
+
+    /* enable TIM0 interrupt */
+    CPUTimer_enableInterrupt(CPUTIMER0_BASE);
+
+    /* PieVectorTable register */
+    // Interrupt_register(INT_TIMER0,&TIMER0_ISR);
+
+    /* PIE enable */
+    // Interrupt_enable(INT_TIMER0);
+
+    /* reload TIM0 counter */
+    CPUTimer_reloadTimerCounter(CPUTIMER0_BASE);
+
+    /* start TIM0 */
+    CPUTimer_startTimer(CPUTIMER0_BASE);
+
 }
 
 static void epwm_gpio_mux(void)
@@ -857,7 +901,16 @@ static float as5600_get_angle(void)
     return ( (angle[0] << 8 | angle[1]) / 4095.0f * 2.0f * M_PI );
 }
 
-// uint32_t cnt = 0;
+static void sweep_init(void)
+{
+    int i;
+
+    for (i = 0; i < SWEEP_SAMPLE_POINT; i++)
+        sweep_sample[i] = sinf( (2 * M_PI / SWEEP_SAMPLE_POINT) * i );
+}
+
+uint16_t count,index,T=36;
+float time;
 
 __interrupt 
 static void ADCC1_ISR(void)
@@ -869,43 +922,48 @@ static void ADCC1_ISR(void)
     /* clear PIE FLAG */
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP1);
 
-    // if (cnt++ < 5000){
-    //     return;
-    // }else{
-    //     cnt = 0;
-    // }
-
-    /* get motor angle */
+    /* run foc */
     foc_run(&foc_motor1);
 
+    /* vofa print */
 #if 1
-    vofa.setData(&vofa,foc_motor1.Iabc[0], 0);
-    vofa.setData(&vofa,foc_motor1.Iabc[1], 1);
-    vofa.setData(&vofa,foc_motor1.Iabc[2], 2);
-    vofa.setData(&vofa,foc_motor1.Ialpha, 3);
-    vofa.setData(&vofa,foc_motor1.Ibeta, 4);
-    vofa.setData(&vofa,foc_motor1.Id, 5);
-    vofa.setData(&vofa,foc_motor1.Id_ref, 6);
-    vofa.setData(&vofa,foc_motor1.Udc, 7);
-#elif 0
-    vofa.setData(&vofa,foc_motor1.Tcm1, 0);
-    vofa.setData(&vofa,foc_motor1.Tcm2, 1);
-    vofa.setData(&vofa,foc_motor1.Tcm3, 2);
-    vofa.setData(&vofa,foc_motor1.thetaELEC, 3);
-    vofa.setData(&vofa,foc_motor1.Ualpha, 4);
-    vofa.setData(&vofa,foc_motor1.Ubeta, 5);
-    vofa.setData(&vofa,foc_motor1.Udc, 7);
+    vofa.setData(&vofa,foc_motor1.Speed_ref, 0);
+    vofa.setData(&vofa,foc_motor1.motorSpeed, 1);
+    vofa.setData(&vofa,foc_motor1.Iq_ref, 2);
+    vofa.setData(&vofa,foc_motor1.Iq, 3);
+    vofa.setData(&vofa,foc_motor1.Iq_error, 4);
+    vofa.setData(&vofa,foc_motor1.Id_ref, 5);
+    vofa.setData(&vofa,foc_motor1.Id, 6);
+    vofa.setData(&vofa,foc_motor1.Id_error, 7);
 #else
-    vofa.setData(&vofa,foc_motor1.Id_ref, 0);
-    vofa.setData(&vofa,foc_motor1.Id, 1);
-    vofa.setData(&vofa,foc_motor1.Id_error, 2);
-    vofa.setData(&vofa,foc_motor1.Ualpha, 3);
-    vofa.setData(&vofa,foc_motor1.Ubeta, 4);
-    vofa.setData(&vofa,foc_motor1.Ud, 5);
-    vofa.setData(&vofa,foc_motor1.Uq, 6);
+    /* sweep function */
+    if (index == 256) {
+        index = 0;
+        if (T > 0)
+            T = T - 2;
+        else{
+            pwm_setDuty(0,0,0);
+            boostxl_3phganiv2_disable();
+            ESTOP0;
+        }
+    }
+
+    if(count++ % T != 0)
+        return;
+    foc_motor1.Iq_ref = sweep_sample[index];
+    time += T/40.0f;
+
+    vofa.setData(&vofa,foc_motor1.Iq_ref, 0);
+    vofa.setData(&vofa,foc_motor1.Iq, 1);
+    vofa.setData(&vofa,foc_motor1.Iq_error, 2);
+    vofa.setData(&vofa,foc_motor1.Id_ref, 3);
+    vofa.setData(&vofa,foc_motor1.Id, 4);
+    vofa.setData(&vofa,foc_motor1.Id_error, 5);
+    vofa.setData(&vofa,time, 6);
+    vofa.setData(&vofa,sweep_sample[index++], 7);
+    vofa.print(&vofa);
 #endif
     vofa.print(&vofa);
-
 
 }
 
@@ -921,8 +979,21 @@ static void XINT1_ISR(void)
     Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP1);
 }
 
+__interrupt 
+static void TIMER0_ISR(void)
+{
+    /* clear TIM0 flag */
+    CPUTimer_clearOverflowFlag(CPUTIMER0_BASE);
+
+    /* clear PIE flag */
+    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP1);
+}
+
+
+int debug_on;
 void boostxl_3phganinv2_test(void)
 {
+
     /* GPIO MUX */
     boostxl_3phganiv2_gpio_mux();
     led_gpio_init();
@@ -935,6 +1006,9 @@ void boostxl_3phganinv2_test(void)
     adc_b_init();
     adc_c_init();
 
+    /* TIMER Init */
+    timer_0_init();
+
     /* I2C Init */
     i2c_gpio_mux();
     i2c_a_init();
@@ -945,6 +1019,9 @@ void boostxl_3phganinv2_test(void)
     /* VOFA+ Init */
     vofa_init(&vofa);
 
+    /* SWEEP Init */
+    sweep_init();
+    
     /* enable boostxl-3phganiv2 */
     boostxl_3phganiv2_enable();
 
@@ -962,6 +1039,9 @@ void boostxl_3phganinv2_test(void)
 
     while (1){
         // DEVICE_DELAY_US(500000);
+        if(debug_on){
+            pwm_setDuty(0,0,0);
+        }
     }
     
 }
@@ -991,12 +1071,12 @@ void get_RadianAngle(struct foc* foc_handle)
 #if 0
     foc_handle->thetaELEC += 2.0 * M_PI * 125e-6 * foc_handle->motorFreq;
     foc_handle->thetaELEC = fmodf(foc_handle->thetaELEC,2 * M_PI);
-#else 
-    //  foc_handle->thetaMECH = as5600_get_angle();
-    //  foc_handle->thetaELEC = foc_handle->thetaMECH * foc_handle->motorPoles;
-    //  foc_handle->thetaELEC = fmodf(foc_handle->thetaELEC, 2 * M_PI);
-    // foc_handle->thetaELEC += M_PI/6;
-    // foc_handle->thetaELEC = fmodf(foc_handle->thetaELEC,2*M_PI);
+    foc_handle->thetaMECH = as5600_get_angle();
+#else
+    foc_handle->thetaMECH = as5600_get_angle();
+    foc_handle->nowClock = CPUTimer_getTimerCount(CPUTIMER0_BASE);
+    foc_handle->thetaELEC = foc_handle->thetaMECH * foc_handle->motorPoles;
+    foc_handle->thetaELEC = fmodf(foc_handle->thetaELEC, 2 * M_PI);
 #endif
 }
 
@@ -1008,9 +1088,9 @@ void get_RadianAngle(struct foc* foc_handle)
 void get_current_Iabc(struct foc* foc_handle)
 {
     /* Ia Ib Ic */
-    foc_handle->Iabc[0] = ADC_readResult(ADCCRESULT_BASE, ADC_SOC_NUMBER5) / 4095.0f * ADC_CURRENT_SCALE - ADC_CURRENT_OFFSET;
-    foc_handle->Iabc[1] = ADC_readResult(ADCCRESULT_BASE, ADC_SOC_NUMBER6) / 4095.0f * ADC_CURRENT_SCALE - ADC_CURRENT_OFFSET;
-    foc_handle->Iabc[2] = ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER5) / 4095.0f * ADC_CURRENT_SCALE - ADC_CURRENT_OFFSET;
+    foc_handle->Iabc[0] = -(ADC_readResult(ADCCRESULT_BASE, ADC_SOC_NUMBER5) / 4095.0f * ADC_CURRENT_SCALE - ADC_CURRENT_OFFSET);
+    foc_handle->Iabc[1] = -(ADC_readResult(ADCCRESULT_BASE, ADC_SOC_NUMBER6) / 4095.0f * ADC_CURRENT_SCALE - ADC_CURRENT_OFFSET);
+    foc_handle->Iabc[2] = -(ADC_readResult(ADCARESULT_BASE, ADC_SOC_NUMBER5) / 4095.0f * ADC_CURRENT_SCALE - ADC_CURRENT_OFFSET);
 }
 
 /**
@@ -1032,9 +1112,33 @@ void get_voltage_Uabc(struct foc* foc_handle)
  *
  * @param foc_handle pointer to foc component handler
  */
+
 void get_motorSpeed(struct foc* foc_handle)
 {
-    //TODO
+    /* auxiliary variable */
+    float auxTheta,tmpSpeed;
+    uint32_t auxClock;
+
+    /* Mechanical Angle diff */
+    auxTheta = foc_handle->thetaMECH - foc_handle->thetaOLDMECH;
+
+    /* timer diff */
+    auxClock = -(foc_handle->nowClock - foc_handle->lastClock);
+
+    /* Calculation circle number */
+    if (fabsf(auxTheta) >= 0.8 * 2 * M_PI){
+        foc_handle->nowTurns = (auxTheta > 0) ? foc_handle->lastTurns - 1 : foc_handle->lastTurns + 1;
+        return;
+    }
+
+    float alpha = 0.01f/(0.01f + (float)(auxClock * 1e-6));
+    /* calculate motor rotation speed RPM (rotation per minute) */
+    tmpSpeed = ( (float)(foc_handle->nowTurns - foc_handle->lastTurns) * 2 * M_PI + auxTheta ) * 30.0f / ( auxClock * 1e-6 * M_PI );
+    foc_handle->motorSpeed = alpha * foc_handle->motorSpeed + (1-alpha) * tmpSpeed;
+
+    foc_handle->thetaOLDMECH = foc_handle->thetaMECH;
+    foc_handle->lastTurns = foc_handle->nowTurns;
+    foc_handle->lastClock = foc_handle->nowClock;
 }
 
 /**
@@ -1044,17 +1148,13 @@ void get_motorSpeed(struct foc* foc_handle)
 void vofa_print(struct vofa* vofa)
 {
     uint16_t *tx_buf = (uint16_t*)&vofa->frame;
-    int i,timeCnt;
+    int i;
     for (i = 0; i < VOFA_CH_COUNT * 2; i++){
-        while(SciaRegs.SCIFFTX.bit.TXFFST >= 14 && timeCnt++ < 1000);
-        if(timeCnt > 1000)
-            return;
+        while(SciaRegs.SCIFFTX.bit.TXFFST >= 14);
         SciaRegs.SCITXBUF.bit.TXDT = tx_buf[i];
         SciaRegs.SCITXBUF.bit.TXDT = tx_buf[i] >> 8;
     }
-    while(SciaRegs.SCIFFTX.bit.TXFFST >= 12 && timeCnt++ < 1000);
-        if(timeCnt > 1000)
-            return;
+    while(SciaRegs.SCIFFTX.bit.TXFFST >= 12);
     SciaRegs.SCITXBUF.bit.TXDT = (uint16_t)vofa->frame.tail[0];
     SciaRegs.SCITXBUF.bit.TXDT = (uint16_t)vofa->frame.tail[1];
     SciaRegs.SCITXBUF.bit.TXDT = (uint16_t)vofa->frame.tail[2];

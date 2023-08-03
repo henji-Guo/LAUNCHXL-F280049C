@@ -11,11 +11,18 @@
 #include "stdint.h"
 #include "math.h"
 
+enum FOC_DIR{
+    DIR_CW,
+    DIR_CCW
+};
+
 struct foc {
     float       Id_ref;
     float       Iq_ref;
     float       Speed_ref;
     uint16_t    pwm_period;
+
+    enum FOC_DIR direction;
 
     float       Iabc[3];
     float       Uabc[3];
@@ -36,6 +43,12 @@ struct foc {
 
     float       thetaELEC;
     float       thetaMECH;
+    float       thetaOLDMECH;
+    float       thetaOFFSET;
+    uint32_t    nowClock;
+    uint32_t    lastClock;
+    int32_t    nowTurns;
+    int32_t    lastTurns;
 
     float       motorSpeed;
     float       motorFreq;
@@ -60,10 +73,13 @@ struct foc {
 
     float       outMax;
     float       outMin;
+    float       currentMax;
+    float       currentMin;
 
     float       Tcm1;
     float       Tcm2;
     float       Tcm3;
+    uint16_t       Sector;
 
     void (*clarke)(struct foc* foc_handle);
     void (*park)(struct foc* foc_handle);
