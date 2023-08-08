@@ -1,7 +1,7 @@
 /*
  * user_driver.h
  *
- *  Created on: 2023Äê6ÔÂ23ÈÕ
+ *  Created on: 2023ï¿½ï¿½6ï¿½ï¿½23ï¿½ï¿½
  *      Author: GHJ
  */
 
@@ -9,5 +9,6 @@
 #define USER_DRIVER_INCLUDE_USER_DRIVER_H_
 
 #include "bsp_led.h"
+#include "bsp_uart.h"
 
 #endif /* USER_DRIVER_INCLUDE_USER_DRIVER_H_ */

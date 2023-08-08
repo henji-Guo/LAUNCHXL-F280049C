@@ -5,6 +5,7 @@
 #include "stdio.h"
 #include "string.h"
 
+
 /**
  * main.c
  */
@@ -25,28 +26,8 @@ int main(void)
 
 //    // SysConfig settings
 //    Board_init();
-    //
-    // SCIA -> mySCI0 Pinmux
-    //
-    GPIO_setPinConfig(GPIO_28_SCIA_RX);
-    GPIO_setPadConfig(28, GPIO_PIN_TYPE_STD | GPIO_PIN_TYPE_PULLUP);
-    GPIO_setQualificationMode(28, GPIO_QUAL_ASYNC);
 
-    GPIO_setPinConfig(GPIO_29_SCIA_TX);
-    GPIO_setPadConfig(29, GPIO_PIN_TYPE_STD | GPIO_PIN_TYPE_PULLUP);
-    GPIO_setQualificationMode(29, GPIO_QUAL_ASYNC);
-
-    SCI_clearInterruptStatus(SCIA_BASE, SCI_INT_RXFF | SCI_INT_TXFF | SCI_INT_FE | SCI_INT_OE | SCI_INT_PE | SCI_INT_RXERR | SCI_INT_RXRDY_BRKDT | SCI_INT_TXRDY);
-    SCI_clearOverflowStatus(SCIA_BASE);
-    SCI_resetTxFIFO(SCIA_BASE);
-    SCI_resetRxFIFO(SCIA_BASE);
-    SCI_resetChannels(SCIA_BASE);
-    SCI_setConfig(SCIA_BASE, DEVICE_LSPCLK_FREQ, 6500000, (SCI_CONFIG_WLEN_8|SCI_CONFIG_STOP_ONE|SCI_CONFIG_PAR_NONE));
-    SCI_disableLoopback(SCIA_BASE);
-    SCI_performSoftwareReset(SCIA_BASE);
-    SCI_setFIFOInterruptLevel(SCIA_BASE, SCI_FIFO_TX0, SCI_FIFO_RX0);
-    SCI_enableFIFO(SCIA_BASE);
-    SCI_enableModule(SCIA_BASE);
+    uart_init();
 
     // Enable Global Interrupt (INTM) and real time interrupt (DBGM)
     EINT;
@@ -56,7 +37,7 @@ int main(void)
 
     DEVICE_DELAY_US(2000000);
 
-    boostxl_3phganinv2_test();
+   boostxl_3phganinv2_test();
 
     while (1)
     {
