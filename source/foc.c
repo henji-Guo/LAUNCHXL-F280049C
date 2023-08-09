@@ -21,6 +21,18 @@ void clarke(struct foc* foc_handle)
 }
 
 /**
+ * @brief Inverse Clarke Transform
+ *
+ * @param foc_handle pointer to foc component handler
+ */
+void iclarke(struct foc* foc_handle)
+{
+    foc_handle->Uabc[0] = foc_handle->Ualpha;
+    foc_handle->Uabc[1] = (-foc_handle->Ubeta + sqrtf(3.0f) * foc_handle->Ualpha) / 2.0f;
+    foc_handle->Uabc[2] = (-foc_handle->Ubeta - sqrtf(3.0f) * foc_handle->Ualpha) / 2.0f;
+}
+
+/**
  * @brief Park Transform
  *
  * @param foc_handle pointer to foc component handler
@@ -208,6 +220,94 @@ void svpwm(struct foc* foc_handle)
     foc_handle->Tcm1 = Tcm1;
     foc_handle->Tcm2 = Tcm2;
     foc_handle->Tcm3 = Tcm3;
+
+    /* set pwm duty */
+    foc_handle->svpwm_setDuty(foc_handle);
+
+}
+
+/**
+ * @brief Fast SVPWM algorithm
+ *
+ * @param foc_handle pointer to foc component handler
+ */
+void fast_svpwm(struct foc* foc_handle)
+{
+    int svmMode = 0;
+
+    float Vmax_pu = 0,Vmin_pu = 0,Vcom_pu;
+    float oneOverDcBus_invV = (float)(1.0f / foc_handle->Udc);
+
+    float Valpha_pu = foc_handle->Ualpha * oneOverDcBus_invV;
+    float Vbeta_pu = foc_handle->Ubeta * oneOverDcBus_invV;
+
+    float Va_tmp = (float)(0.5f) * Valpha_pu;
+    float Vb_tmp = sqrtf(3.0) / 2.0f * Vbeta_pu;
+
+    float Va_pu = Valpha_pu;
+
+    //
+    // -0.5*Valpha + sqrt(3)/2 * Vbeta
+    //
+    float Vb_pu = -Va_tmp + Vb_tmp;
+
+    //
+    // -0.5*Valpha - sqrt(3)/2 * Vbeta
+    float Vc_pu = -Va_tmp - Vb_tmp;
+
+    //
+    // Find Vmax and Vmin
+    //
+    if(Va_pu > Vb_pu)
+    {
+        Vmax_pu = Va_pu;
+        Vmin_pu = Vb_pu;
+    }
+    else
+    {
+        Vmax_pu = Vb_pu;
+        Vmin_pu = Va_pu;
+    }
+
+    if(Vc_pu > Vmax_pu)
+    {
+        Vmax_pu = Vc_pu;
+    }
+    else if(Vc_pu < Vmin_pu)
+    {
+        Vmin_pu = Vc_pu;
+    }
+
+    // Compute Vcom = 0.5*(Vmax+Vmin)
+    Vcom_pu = 0.5f * (Vmax_pu + Vmin_pu);
+
+    if(svmMode == 0)
+    {
+        /* CSVPWM */
+        // Subtract common-mode term to achieve SV modulation
+        foc_handle->Tcm1 = -(Va_pu - Vcom_pu);
+        foc_handle->Tcm2 = -(Vb_pu - Vcom_pu);
+        foc_handle->Tcm3 = -(Vc_pu - Vcom_pu);
+    }
+    else if(svmMode == 1)
+    {
+        /* DPWMMIN(-120°DPWM) */
+        foc_handle->Tcm1 = -((Va_pu - Vmin_pu) - 0.5f);
+        foc_handle->Tcm2 = -((Vb_pu - Vmin_pu) - 0.5f);
+        foc_handle->Tcm3 = -((Vc_pu - Vmin_pu) - 0.5f);
+    }
+    else if(svmMode == 2)
+    {
+        /* DPWMMAX(+120°DPWM) */
+        foc_handle->Tcm1 = -((Va_pu - Vmax_pu) + 0.5f);
+        foc_handle->Tcm2 = -((Vb_pu - Vmax_pu) + 0.5f);
+        foc_handle->Tcm3 = -((Vc_pu - Vmax_pu) + 0.5f);
+    }
+
+    /* save Tcm1 Tcm2 Tcm3 */
+    foc_handle->Tcm1 += 0.5f;
+    foc_handle->Tcm2 += 0.5f;
+    foc_handle->Tcm3 += 0.5f;
 
     /* set pwm duty */
     foc_handle->svpwm_setDuty(foc_handle);
@@ -446,9 +546,11 @@ void foc_init(struct foc* foc_handle)
     foc_handle->Sector = 2;
 
     foc_handle->clarke = &clarke;
+    foc_handle->iclarke = &iclarke;
     foc_handle->park   = &park;
     foc_handle->ipark  = &ipark;
     foc_handle->svpwm  = &svpwm;
+    foc_handle->fast_svpwm  = &fast_svpwm;
     foc_handle->Id_PI  = &Id_PI;
     foc_handle->Iq_PI  = &Iq_PI;
     foc_handle->Speed_PID = &Speed_PID;
@@ -497,5 +599,6 @@ void foc_run(struct foc* foc_handle)
     foc_handle->ipark(foc_handle);
 
     /* run svpwm */
-    foc_handle->svpwm(foc_handle);
+    // foc_handle->svpwm(foc_handle);
+    foc_handle->fast_svpwm(foc_handle);
 }

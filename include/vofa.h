@@ -26,6 +26,8 @@ struct vofa {
     void (*print)(struct vofa *vofa);
 };
 
+extern struct vofa vofa;
+
 void vofa_init(struct vofa *vofa);
 
 #endif /* INCLUDE_VOFA_H_ */

@@ -82,9 +82,11 @@ struct foc {
     uint16_t       Sector;
 
     void (*clarke)(struct foc* foc_handle);
+    void (*iclarke)(struct foc* foc_handle);
     void (*park)(struct foc* foc_handle);
     void (*ipark)(struct foc* foc_handle);
     void (*svpwm)(struct foc* foc_handle);
+    void (*fast_svpwm)(struct foc* foc_handle);
     void (*svpwm_setDuty)(struct foc* foc_handle);
     void (*Id_PI)(struct foc* foc_handle);
     void (*Iq_PI)(struct foc* foc_handle);

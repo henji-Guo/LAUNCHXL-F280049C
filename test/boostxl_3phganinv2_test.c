@@ -132,8 +132,6 @@ typedef enum {
     LED_TOGGLE  =   2
 }LED_STATUS;
 
-/* vofa frame */
-struct vofa vofa;
 
 /* sweep sample */
 #define SWEEP_SAMPLE_POINT  256
@@ -194,7 +192,7 @@ static void boostxl_3phganiv2_gpio_mux(void)
 
     /* register XINT1 interrupt function and enable in PIE */
     Interrupt_register(INT_XINT1,&XINT1_ISR);
-    Interrupt_enable(INT_XINT1);
+    // Interrupt_enable(INT_XINT1);
 }
 
 static void boostxl_3phganiv2_enable(void)
@@ -926,15 +924,16 @@ static void ADCC1_ISR(void)
     foc_run(&foc_motor1);
 
     /* vofa print */
+    vofa.print(&vofa);
 #if 1
-    vofa.setData(&vofa,foc_motor1.Speed_ref, 0);
-    vofa.setData(&vofa,foc_motor1.motorSpeed, 1);
-    vofa.setData(&vofa,foc_motor1.Iq_ref, 2);
-    vofa.setData(&vofa,foc_motor1.Iq, 3);
-    vofa.setData(&vofa,foc_motor1.Iq_error, 4);
-    vofa.setData(&vofa,foc_motor1.Id_ref, 5);
-    vofa.setData(&vofa,foc_motor1.Id, 6);
-    vofa.setData(&vofa,foc_motor1.Id_error, 7);
+    vofa.setData(&vofa,foc_motor1.Ud, 0);
+    vofa.setData(&vofa,foc_motor1.Uq, 1);
+    vofa.setData(&vofa,foc_motor1.Ualpha, 2);
+    vofa.setData(&vofa,foc_motor1.Ubeta, 3);
+    vofa.setData(&vofa,foc_motor1.thetaELEC, 4);
+    vofa.setData(&vofa,foc_motor1.Tcm1, 5);
+    vofa.setData(&vofa,foc_motor1.Tcm2, 6);
+    vofa.setData(&vofa,foc_motor1.Tcm3, 7);
 #else
     /* sweep function */
     if (index == 256) {
@@ -963,7 +962,6 @@ static void ADCC1_ISR(void)
     vofa.setData(&vofa,sweep_sample[index++], 7);
     vofa.print(&vofa);
 #endif
-    vofa.print(&vofa);
 
 }
 
@@ -1068,10 +1066,10 @@ void svpwm_setDuty(struct foc* foc_handle)
  */
 void get_RadianAngle(struct foc* foc_handle)
 {
-#if 0
+#if 1
     foc_handle->thetaELEC += 2.0 * M_PI * 125e-6 * foc_handle->motorFreq;
     foc_handle->thetaELEC = fmodf(foc_handle->thetaELEC,2 * M_PI);
-    foc_handle->thetaMECH = as5600_get_angle();
+    // foc_handle->thetaMECH = as5600_get_angle();
 #else
     foc_handle->thetaMECH = as5600_get_angle();
     foc_handle->nowClock = CPUTimer_getTimerCount(CPUTIMER0_BASE);

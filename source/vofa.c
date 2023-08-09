@@ -8,6 +8,9 @@
 #include "vofa.h"
 #include "string.h"
 
+/* vofa frame */
+struct vofa vofa;
+
 /**
  * @brief vofa init
  * 
