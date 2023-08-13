@@ -56,6 +56,7 @@ struct foc {
     float       motorRs;
     float       motorLd;
     float       motorLq;
+    float       motorFlux;
 
     float       Id_Kp;
     float       Id_Ki;
@@ -95,6 +96,10 @@ struct foc {
     void (*get_current_Iabc)(struct foc* foc_handle);
     void (*get_voltage_Uabc)(struct foc* foc_handle);
     void (*get_motorSpeed)(struct foc* foc_handle);
+    void (*motor_Rs_identification)(struct foc* foc_handle);
+    void (*motor_Ld_identification)(struct foc* foc_handle);
+    void (*motor_Lq_identification)(struct foc* foc_handle);
+    void (*motor_Flux_identification)(struct foc* foc_handle);
 };
 extern struct foc foc_motor1;
 extern struct foc foc_motor2;

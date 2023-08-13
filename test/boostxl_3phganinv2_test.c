@@ -53,8 +53,10 @@
 #include "f28004x_device.h"
 #include <math.h>
 #include <stdio.h>
+#include "user_driver.h"
 #include "foc.h"
 #include "vofa.h"
+#include "Queue.h"
 
 /* #################### User Define #################### */
 /* Over Temperature PIN */
@@ -132,6 +134,8 @@ typedef enum {
     LED_TOGGLE  =   2
 }LED_STATUS;
 
+/* log frame print */
+struct foc_frame sendMsg;
 
 /* sweep sample */
 #define SWEEP_SAMPLE_POINT  256
@@ -909,31 +913,37 @@ static void sweep_init(void)
 
 uint16_t count,index,T=36;
 float time;
-
+int rs_flag;
+struct JustFloat frame;
 __interrupt 
 static void ADCC1_ISR(void)
 {
-    /* clear EPWM SOCA flag */
-    EPWM_clearADCTriggerFlag(EPWM1_BASE,EPWM_SOC_A);
-    /* clear ADCB INT1 flag */
-    ADC_clearInterruptStatus(ADCC_BASE, ADC_INT_NUMBER1);
-    /* clear PIE FLAG */
-    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP1);
-
-    /* run foc */
+    // /* run foc */
     foc_run(&foc_motor1);
 
+    // if(rs_flag){
+    //     if (fabsf(foc_motor1.Iabc[0]) < 0.5f)
+    //         i += 0.01;
+    //     pwm_setDuty((1-i)*6250,6250,6250);
+    //     foc_motor1.motorRs = foc_motor1.Uabc[0] / foc_motor1.Iabc[0] * 2.0f / 3.0f;
+
+    // }else
+    //     pwm_setDuty(0,0,0);
+
+    // Ud = Rs*Id + Ld * dId/dt - omega*Lq*Iq
+    // Uq = Rs*Iq + Lq * dIq/dt + omega*(Lq*Iq + Pusi )
+    // foc_motor1.motorLq = (foc_motor1.motorRs * foc_motor1.Id - foc_motor1.Ud) / (foc_motor1.motorFreq * 2 * M_PI * foc_motor1.Iq);
+
     /* vofa print */
-    vofa.print(&vofa);
 #if 1
-    vofa.setData(&vofa,foc_motor1.Ud, 0);
-    vofa.setData(&vofa,foc_motor1.Uq, 1);
-    vofa.setData(&vofa,foc_motor1.Ualpha, 2);
-    vofa.setData(&vofa,foc_motor1.Ubeta, 3);
-    vofa.setData(&vofa,foc_motor1.thetaELEC, 4);
-    vofa.setData(&vofa,foc_motor1.Tcm1, 5);
-    vofa.setData(&vofa,foc_motor1.Tcm2, 6);
-    vofa.setData(&vofa,foc_motor1.Tcm3, 7);
+    vofa.setData(&vofa,foc_motor1.Uabc[0], 0);
+    vofa.setData(&vofa,foc_motor1.Uabc[1], 1);
+    vofa.setData(&vofa,foc_motor1.Uabc[2], 2);
+    vofa.setData(&vofa,foc_motor1.motorRs, 3);
+    vofa.setData(&vofa,foc_motor1.motorLq, 4);
+    vofa.setData(&vofa,foc_motor1.Iq, 5);
+    vofa.setData(&vofa,foc_motor1.Id, 6);
+    vofa.setData(&vofa,foc_motor1.Ud, 7);
 #else
     /* sweep function */
     if (index == 256) {
@@ -962,7 +972,14 @@ static void ADCC1_ISR(void)
     vofa.setData(&vofa,sweep_sample[index++], 7);
     vofa.print(&vofa);
 #endif
+    vofa.print(&vofa);
 
+    /* clear EPWM SOCA flag */
+    EPWM_clearADCTriggerFlag(EPWM1_BASE,EPWM_SOC_A);
+    /* clear ADCB INT1 flag */
+    ADC_clearInterruptStatus(ADCC_BASE, ADC_INT_NUMBER1);
+    /* clear PIE FLAG */
+    Interrupt_clearACKGroup(INTERRUPT_ACK_GROUP1);
 }
 
 __interrupt
@@ -1019,6 +1036,9 @@ void boostxl_3phganinv2_test(void)
 
     /* SWEEP Init */
     sweep_init();
+
+    /* Queue Init */
+    SequenceQueue_Init(&bufQueue,100);
     
     /* enable boostxl-3phganiv2 */
     boostxl_3phganiv2_enable();
@@ -1040,6 +1060,10 @@ void boostxl_3phganinv2_test(void)
         if(debug_on){
             pwm_setDuty(0,0,0);
         }
+       if(SequenceQueue_isEmpty(&bufQueue) != 0 && uart_isIDLE(&bsp_uart) == 0){
+            sendMsg = SequenceQueue_Pop(&bufQueue);
+            uart_int_transmit(&bsp_uart,sendMsg.data,36);
+       }
     }
     
 }
@@ -1066,10 +1090,12 @@ void svpwm_setDuty(struct foc* foc_handle)
  */
 void get_RadianAngle(struct foc* foc_handle)
 {
+    return;
 #if 1
     foc_handle->thetaELEC += 2.0 * M_PI * 125e-6 * foc_handle->motorFreq;
     foc_handle->thetaELEC = fmodf(foc_handle->thetaELEC,2 * M_PI);
-    // foc_handle->thetaMECH = as5600_get_angle();
+    foc_handle->thetaMECH = as5600_get_angle();
+    foc_handle->nowClock = CPUTimer_getTimerCount(CPUTIMER0_BASE);
 #else
     foc_handle->thetaMECH = as5600_get_angle();
     foc_handle->nowClock = CPUTimer_getTimerCount(CPUTIMER0_BASE);
@@ -1110,7 +1136,6 @@ void get_voltage_Uabc(struct foc* foc_handle)
  *
  * @param foc_handle pointer to foc component handler
  */
-
 void get_motorSpeed(struct foc* foc_handle)
 {
     /* auxiliary variable */
@@ -1145,6 +1170,7 @@ void get_motorSpeed(struct foc* foc_handle)
  */
 void vofa_print(struct vofa* vofa)
 {
+#if 0
     uint16_t *tx_buf = (uint16_t*)&vofa->frame;
     int i;
     for (i = 0; i < VOFA_CH_COUNT * 2; i++){
@@ -1157,4 +1183,24 @@ void vofa_print(struct vofa* vofa)
     SciaRegs.SCITXBUF.bit.TXDT = (uint16_t)vofa->frame.tail[1];
     SciaRegs.SCITXBUF.bit.TXDT = (uint16_t)vofa->frame.tail[2];
     SciaRegs.SCITXBUF.bit.TXDT = (uint16_t)vofa->frame.tail[3];
+#else
+    struct foc_frame logFrame;
+    uint32_t *tx_buf = (uint32_t*)&vofa->frame;
+    int i;
+
+    for (i = 0; i < VOFA_CH_COUNT ; i ++){
+        logFrame.data[4*i] = tx_buf[i] & 0xFF;
+        logFrame.data[4*i+1] = (tx_buf[i] & 0xFF00) >> 8;
+        logFrame.data[4*i+2] = (tx_buf[i] & 0xFF0000) >> 16;
+        logFrame.data[4*i+3] = (tx_buf[i] & 0xFF000000) >> 24;
+    }
+    logFrame.data[4*i] = (uint16_t)vofa->frame.tail[0];
+    logFrame.data[4*i+1] = (uint16_t)vofa->frame.tail[1];
+    logFrame.data[4*i+2] = (uint16_t)vofa->frame.tail[2];
+    logFrame.data[4*i+3] = (uint16_t)vofa->frame.tail[3];
+#endif
+
+   if(SequenceQueue_isFull(&bufQueue) != 0);
+        SequenceQueue_Push(&bufQueue,logFrame);
 }
+

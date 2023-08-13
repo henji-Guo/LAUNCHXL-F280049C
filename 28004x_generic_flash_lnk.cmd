@@ -65,8 +65,8 @@ PAGE 1 :
 
    RAMGS0      : origin = 0x00C000, length = 0x002000
    RAMGS1      : origin = 0x00E000, length = 0x002000
-   RAMGS2      : origin = 0x010000, length = 0x002000
-   RAMGS3      : origin = 0x012000, length = 0x001FF8
+   RAMGS2      : origin = 0x010000, length = 0x001FF8
+//   RAMGS3      : origin = 0x012000, length = 0x001FF8
 //   RAMGS3_RSVD : origin = 0x013FF8, length = 0x000008     /* Reserve and do not use for code as per the errata advisory "Memory: Prefetching Beyond Valid Memory" */
 }
 
@@ -83,11 +83,11 @@ SECTIONS
 
 #if defined(__TI_EABI__)
    .init_array      : > FLASH_BANK0_SEC1,       PAGE = 0,       ALIGN(4)
-   .bss             : > RAMLS5,       PAGE = 1
+   .bss             : > RAMGS1|RAMGS2,       PAGE = 1
    .bss:output      : > RAMLS3,       PAGE = 0
    .bss:cio         : > RAMLS0,       PAGE = 0
-   .data            : > RAMLS5,       PAGE = 1
-   .sysmem          : > RAMLS5,       PAGE = 1
+   .data            : > RAMLS6|RAMLS7,       PAGE = 1
+   .sysmem          : > RAMLS5|RAMLS6,       PAGE = 1
    /* Initalized sections go in Flash */
    .const           : > FLASH_BANK0_SEC4,       PAGE = 0,       ALIGN(4)
 #else

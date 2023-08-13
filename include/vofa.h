@@ -23,6 +23,7 @@ struct JustFloat {
 struct vofa {
     struct JustFloat frame;
     int (*setData)(struct vofa *vofa,float data,int chCnt);
+    void (*toBareFrame)(struct vofa *vofa);
     void (*print)(struct vofa *vofa);
 };
 

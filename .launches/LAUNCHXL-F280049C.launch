@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <launchConfiguration type="com.ti.ccstudio.debug.launchType.device.debugging">
     <mapAttribute key="ccs.memoryview.format">
+        <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser.PIN_CLONE_VIEW_1@#$Texas Instruments XDS110 USB Debug Probe/C28xx_CPU1@#$1" value="16-Bit Hex - TI Style"/>
         <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser@#$Texas Instruments XDS110 USB Debug Probe/C28xx_CPU1@#$0" value="16-Bit Hex - TI Style"/>
         <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser@#$Texas Instruments XDS110 USB Debug Probe/C28xx_CPU1@#$1" value="16-Bit Hex - TI Style"/>
         <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser@#$Texas Instruments XDS110 USB Debug Probe/C28xx_CPU1@#$2" value="16-Bit Hex - TI Style"/>
@@ -8,7 +9,8 @@
         <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser@#$Texas Instruments XDS110 USB Debug Probe_0/C28xx_CPU1@#$1" value="32-Bit Hex - TI Style"/>
     </mapAttribute>
     <mapAttribute key="ccs.memoryview.pageexpr">
-        <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser@#$Texas Instruments XDS110 USB Debug Probe/C28xx_CPU1" value="Data@@&amp;SciaRegs.SCIRXBUF"/>
+        <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser.PIN_CLONE_VIEW_1@#$Texas Instruments XDS110 USB Debug Probe/C28xx_CPU1" value="Data@@&amp;bufQueue.length"/>
+        <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser@#$Texas Instruments XDS110 USB Debug Probe/C28xx_CPU1" value="Data@@&amp;vofa"/>
         <mapEntry key="org.eclipse.cdt.debug.ui.memory.memorybrowser.MemoryBrowser@#$Texas Instruments XDS110 USB Debug Probe_0/C28xx_CPU1" value="Data@@0x00000D4C"/>
     </mapAttribute>
     <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_DEBUGGER_PROPERTIES.TMS320F280049C.ccxml.Texas Instruments XDS110 USB Debug Probe/C28xx_CPU1" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot; ?&gt;&#10;&lt;PropertyValues&gt;&#10;&#10;  &lt;property id=&quot;ConnectOnStartup&quot;&gt;&#10;    &lt;curValue&gt;1&lt;/curValue&gt;&#10;  &lt;/property&gt;&#10;&#10;  &lt;property id=&quot;EnableInstalledBreakpoint&quot;&gt;&#10;    &lt;curValue&gt;1&lt;/curValue&gt;&#10;  &lt;/property&gt;&#10;&#10;  &lt;property id=&quot;IgnoreSoftLaunchFailures&quot;&gt;&#10;    &lt;curValue&gt;0&lt;/curValue&gt;&#10;  &lt;/property&gt;&#10;&#10;&lt;/PropertyValues&gt;&#10;"/>
