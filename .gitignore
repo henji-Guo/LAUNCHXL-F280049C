@@ -1,0 +1,10 @@
+Debug/
+device_support/driverlib/ccs
+
+*.projectspec
+
+tags
+*.d_raw
+*.o
+*.obj
+*.out

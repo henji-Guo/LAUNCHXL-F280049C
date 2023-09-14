@@ -1,0 +1,16 @@
+{
+    "files.associations": {
+        "*.S": "c",
+        "*.cla": "c",
+        "*.ld": "linkerscript",
+        "driverlib.h": "c",
+        "device.h": "c",
+        "lin.h": "c",
+        "hw_lin.h": "c",
+        "f28004x_device.h": "c",
+        "f28004x_lin.h": "c",
+        "f28004x_sci.h": "c",
+        "gpio.h": "c",
+        "*.cmd": "c"
+    }
+}
