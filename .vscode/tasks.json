@@ -6,7 +6,7 @@
         {
             "label": "Rebuild Project",
             "type": "shell",
-            "command": "make clean;make -j16",
+            "command": "make clean;make -j16;cp ./Debug/demo* /mnt/d/Workspace/workspace-ccs/demo/Debug;make clean;cp -r ./* /mnt/d/Workspace/workspace-ccs/demo/c2000/;",
             "problemMatcher": [],
             "group": {
                 "kind": "build",
