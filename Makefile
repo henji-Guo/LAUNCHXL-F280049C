@@ -100,7 +100,7 @@ CFLAGS += --define=_INLINE \
 
 
 # Link Flags #
-LDFLAGS  = --stack_size=0x300 --warn_sections
+LDFLAGS  = --stack_size=0x800 --heap_size=0x400 --warn_sections
 LDFLAGS += --entry_point=code_start --rom_model --reread_libs
 LINKSCIRTS += f28004x_headers_nonbios.cmd 
 LINKSCIRTS += 28004x_launchpad_flash_lnk.cmd
@@ -122,6 +122,7 @@ OBJ_PATH = $(BUILD_DIR)/Debug
 
 # source directory #
 SRC_PATH = $(ROOTDIR)/ \
+		   $(ROOTDIR)/source \
 		   $(ROOTDIR)/device_support/ \
            $(ROOTDIR)/device_support/driverlib \
 		   ${ROOTDIR}/libraries/control/pi \

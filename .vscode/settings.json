@@ -11,6 +11,11 @@
         "f28004x_lin.h": "c",
         "f28004x_sci.h": "c",
         "gpio.h": "c",
-        "*.cmd": "c"
+        "*.cmd": "c",
+        "main.h": "c",
+        "queue.h": "c",
+        "foc.h": "c",
+        "vofa.h": "c",
+        "string.h": "c"
     }
 }

@@ -1,6 +1,6 @@
-#include "device.h"
-#include "driverlib.h"
-#include "f28004x_device.h"
+#include "main.h"
+
+#define LOG_USE_VOFA_QUEUE
 
 void main(void)
 {
@@ -17,17 +17,37 @@ void main(void)
     // Service Routines (ISR)
     Interrupt_initVectorTable();
 
-//    // SysConfig settings
-//    Board_init();
+    // // SysConfig settings
+    // Board_init();
+
+    // Uart Init
+    uart_init();
+
+    // Vofa Init
+    vofa_init(&vofa);
+
+#ifdef LOG_USE_VOFA_QUEUE
+    /* Queue Message */
+    QueueElemType sendMsg;
+    
+    /* Queue Init */
+    SequenceQueue_Init(&bufQueue, 50);
+#endif
 
     // Enable Global Interrupt (INTM) and real time interrupt (DBGM)
     EINT;
     ERTM;
-    
+
     while (1)
     {
-        //TODO
+        // TODO
 
-        DEVICE_DELAY_US(500000);
+#ifdef LOG_USE_VOFA_QUEUE
+        if (SequenceQueue_isEmpty(&bufQueue) != 0 && uart_isIDLE(&bsp_uart) == 0)
+        {
+            sendMsg = SequenceQueue_Pop(&bufQueue);
+            uart_int_transmit(&bsp_uart, sendMsg.data, sizeof(sendMsg.data));
+        }
+#endif
     }
 }
