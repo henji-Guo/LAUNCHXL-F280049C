@@ -297,11 +297,11 @@ extern "C"
 #define DEVICE_SYSCLK_FREQ          ((DEVICE_OSCSRC_FREQ * 10 * 1) / 2)
 
 //
-// 25MHz LSPCLK frequency based on the above DEVICE_SYSCLK_FREQ and a default
-// low speed peripheral clock divider of 4. Update the code below if a
+// 100MHz LSPCLK frequency based on the above DEVICE_SYSCLK_FREQ and a default
+// low speed peripheral clock divider of 1. Update the code below if a
 // different LSPCLK divider is used!
 //
-#define DEVICE_LSPCLK_FREQ          (DEVICE_SYSCLK_FREQ / 4)
+#define DEVICE_LSPCLK_FREQ          (DEVICE_SYSCLK_FREQ / 1)
 
 //*****************************************************************************
 //

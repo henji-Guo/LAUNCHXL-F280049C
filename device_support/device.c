@@ -104,9 +104,9 @@ void Device_init(void)
     SysCtl_setClock(DEVICE_SETCLOCK_CFG);
 
     //
-    // Make sure the LSPCLK divider is set to the default (divide by 4)
+    // Make sure the LSPCLK divider is set to the default (divide by 1) 100MHz
     //
-    SysCtl_setLowSpeedClock(SYSCTL_LSPCLK_PRESCALE_4);
+    SysCtl_setLowSpeedClock(SYSCTL_LSPCLK_PRESCALE_1);
 
     //
     // These asserts will check that the #defines for the clock rates in
