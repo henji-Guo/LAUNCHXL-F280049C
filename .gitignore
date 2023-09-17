@@ -1,4 +1,17 @@
+<<<<<<< HEAD
 /Debug/
 /RAM/
 /FLASH/
 /RAM__opt_level__4/
+=======
+Debug/
+device_support/driverlib/ccs
+
+*.projectspec
+
+tags
+*.d_raw
+*.o
+*.obj
+*.out
+>>>>>>> master

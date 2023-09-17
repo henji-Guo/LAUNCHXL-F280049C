@@ -5,6 +5,7 @@
         "*.ld": "linkerscript",
         "driverlib.h": "c",
         "device.h": "c",
+<<<<<<< HEAD
         "f28004x_device.h": "c",
         "adc.h": "c",
         "asysctl.h": "c",
@@ -16,4 +17,19 @@
     },
     "C_Cpp.errorSquiggles": "disabled",
     "C_Cpp.default.compilerPath": ""
+=======
+        "lin.h": "c",
+        "hw_lin.h": "c",
+        "f28004x_device.h": "c",
+        "f28004x_lin.h": "c",
+        "f28004x_sci.h": "c",
+        "gpio.h": "c",
+        "*.cmd": "c",
+        "main.h": "c",
+        "queue.h": "c",
+        "foc.h": "c",
+        "vofa.h": "c",
+        "string.h": "c"
+    }
+>>>>>>> master
 }

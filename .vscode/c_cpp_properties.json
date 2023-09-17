@@ -1,6 +1,7 @@
 {
     "configurations": [
         {
+<<<<<<< HEAD
             "name": "Win32",
             "includePath": [
                 "${workspaceFolder}/**",
@@ -15,6 +16,18 @@
                 "__TMS320C28XX__"
             ],
             "cStandard": "c99"
+=======
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/device_support/headers/include",
+                "${workspaceFolder}/device_support/driverlib"
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cppStandard": "gnu++14",
+            "intelliSenseMode": "linux-gcc-x64"
+>>>>>>> master
         }
     ],
     "version": 4
